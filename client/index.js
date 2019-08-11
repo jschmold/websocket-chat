@@ -6,14 +6,17 @@ const { timer } = require('rxjs')
 let ui = new View();
 let msg = new Messaging();
 
+// Respond to chat events coming from the server
 msg.events$
   .pipe(filter(a => a.event === 'chat'))
   .subscribe(evt => ui.addMessage(evt.data));
 
+// Respond to chat events coming from the UI
 ui.events$
   .pipe(filter(a => a.event === 'chat'))
   .subscribe(evt => msg.message(evt.data))
 
+// Response to commands coming from the UI
 ui.events$
   .pipe(
     filter(a => a.event === 'command'),
@@ -30,6 +33,7 @@ ui.events$
     }
   })
 
+// Listen to when the UI says it wants to quit
 ui.events$
   .pipe(filter(a => a.event === 'quit'))
   .subscribe(evt => msg.quit())
